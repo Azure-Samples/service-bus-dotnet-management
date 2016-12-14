@@ -1,0 +1,37 @@
+{
+	"userSecretsId": "service-bus-dotnet-management-2629A99A-086E-404A-BE35-1605B78C0115",
+	"version": "1.0.0-*",
+	"buildOptions": {
+		"emitEntryPoint": true,
+		"copyToOutput": {
+			"includeFiles": [ "project.json", "appsettings.json" ]
+		}
+	},
+
+	"dependencies": {
+		"Microsoft.NETCore.App": {
+			"type": "platform",
+			"version": "1.0.1"
+		},
+		"Microsoft.Azure.Management.ResourceManager": "1.3.1-preview",
+		"Microsoft.Azure.Management.ServiceBus": "0.0.1-preview",
+		"Microsoft.IdentityModel.Clients.ActiveDirectory": "3.13.5",
+		"Microsoft.Rest.ClientRuntime": "2.3.2",
+		"Microsoft.Extensions.Configuration": "1.1.0",
+		"Microsoft.Extensions.Configuration.FileExtensions": "1.1.0",
+		"Microsoft.Extensions.Configuration.Json": "1.1.0",
+		"Microsoft.Extensions.Configuration.UserSecrets": "1.0.0"
+	},
+
+	"frameworks": {
+		"netcoreapp1.0": {
+			"imports": "dnxcore50"
+		}
+	},
+
+	"tools": {
+		"Microsoft.Extensions.SecretManager.Tools": {
+			"version": "1.0.0-preview3-final"
+		}
+	}
+}
