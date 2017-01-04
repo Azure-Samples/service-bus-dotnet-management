@@ -17,10 +17,12 @@ In order to get started using the Service Bus management libraries, you must aut
 * [Use Azure PowerShell to create a service principal to access resources](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authenticate-service-principal)
 * [Use Azure CLI to create a service principal to access resources](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authenticate-service-principal-cli)
 
-The above tutorials will provide you with an `AppId`, `TenantId`, and `ClientSecret`, all of which will be used to authenticate by the management libraries. 
+The above tutorials will provide you with an `AppId` (Client ID), `TenantId`, and `ClientSecret` (Authentication Key), all of which will be used to authenticate by the management libraries. You must have 'Owner' permissions under *Role* for the resource group that you wish to run the sample on. Finally, when creating your Active Directory application, if you do not have a sign-on URL to input in the create step, simply input any URL format string e.g. https://contoso.org/exampleapp.
+
+You will also have to install DotNet Core in order to run the sample.
 
 ## Running the sample
-Populate the `appsettings.json` file with the appropriate values obtained from Azure Active Directory, and run the app using Visual Studio or `dotnet run`.
+Populate the `appsettings.json` file with the appropriate values obtained from Azure Active Directory, and run the app using Visual Studio or `dotnet run`. You may find your SubscriptionId by clicking *More services* -> *Subscriptions* in the left hand nav of the Azure Portal.
 
 ```json
 {
@@ -33,7 +35,7 @@ Populate the `appsettings.json` file with the appropriate values obtained from A
 }
 ```
 
-## Required packages
+## Required NuGet packages
 In order to use the `Microsoft.Azure.Management.ServiceBus` package, you will also need:
 
 * `Microsoft.Azure.Management.ResourceManager` - used to perform operations on resource groups, a required 'container' for Azure resources.
