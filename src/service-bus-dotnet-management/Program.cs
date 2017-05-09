@@ -7,7 +7,7 @@ namespace service_bus_dotnet_management
 	{
 		static void Main(string[] args)
 		{
-			ServiceBusManagementSample.Run();
+			ServiceBusManagementSample.Run().GetAwaiter().GetResult();
 		}
 	}
 }
