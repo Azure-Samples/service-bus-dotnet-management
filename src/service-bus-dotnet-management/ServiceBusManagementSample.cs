@@ -35,13 +35,13 @@ namespace service_bus_dotnet_management
 			SettingsCache = builder.Build();
 		}
 
-		public static void Run()
+		public static async Task Run()
 		{
-			CreateResourceGroup().ConfigureAwait(false).GetAwaiter().GetResult();
-			CreateNamespace().ConfigureAwait(false).GetAwaiter().GetResult();
-			CreateQueue().ConfigureAwait(false).GetAwaiter().GetResult();
-			CreateTopic().ConfigureAwait(false).GetAwaiter().GetResult();
-			CreateSubscription().ConfigureAwait(false).GetAwaiter().GetResult();
+            await CreateResourceGroup().ConfigureAwait(false);
+			await CreateNamespace().ConfigureAwait(false);
+			await CreateQueue().ConfigureAwait(false);
+			await CreateTopic().ConfigureAwait(false);
+			await CreateSubscription().ConfigureAwait(false);
 
 			Console.WriteLine("Press a key to exit.");
 			Console.ReadLine();
