@@ -49,7 +49,7 @@ The pattern to manipulate any Service Bus resource is similar and follows a comm
     ```csharp
     var context = new AuthenticationContext($"https://login.windows.net/{tenantId}");
 
-    var result = await context.AcquireTokenAsync(
+    var token = await context.AcquireTokenAsync(
         "https://management.core.windows.net/",
         new ClientCredential(clientId, clientSecret)
     );
