@@ -30,7 +30,6 @@ namespace service_bus_dotnet_management
 		{
 			var builder = new ConfigurationBuilder();
 			builder.AddJsonFile("appsettings.json", true, true);
-			builder.AddUserSecrets();
 
 			SettingsCache = builder.Build();
 		}
