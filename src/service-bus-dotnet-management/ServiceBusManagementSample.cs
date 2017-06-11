@@ -19,19 +19,22 @@ namespace service_bus_dotnet_management
 		private const string TopicName = "topic1";
 		private const string SubscriptionName = "topic1";
 
-		private static readonly IConfigurationRoot SettingsCache;
-		private static string tokenValue = string.Empty;
-		private static DateTime tokenExpiresAtUtc = DateTime.MinValue;
+		private static readonly IConfigurationRoot settingsCache;
+	    private static AppOptions appOptions;
+	    private static string tokenValue = string.Empty;
+	    private static DateTime tokenExpiresAtUtc = DateTime.MinValue;
 
-		private static string resourceGroupName = string.Empty;
-		private static string namespaceName = string.Empty;
+	    private static string resourceGroupName = string.Empty;
+	    private static string namespaceName = string.Empty;
 
-		static ServiceBusManagementSample()
+	    static ServiceBusManagementSample()
 		{
 			var builder = new ConfigurationBuilder();
 			builder.AddJsonFile("appsettings.json", true, true);
 
-			SettingsCache = builder.Build();
+			settingsCache = builder.Build();
+		    appOptions = new AppOptions();
+            settingsCache.Bind(appOptions);
 		}
 
 		public static async Task Run()
@@ -58,12 +61,12 @@ namespace service_bus_dotnet_management
 				var creds = new TokenCredentials(token);
 				var rmClient = new ResourceManagementClient(creds)
 				{
-					SubscriptionId = SettingsCache["SubscriptionId"]
+					SubscriptionId = appOptions.SubscriptionId
 				};
 
 				var resourceGroupParams = new ResourceGroup()
 				{
-					Location = SettingsCache["DataCenterLocation"],
+					Location = appOptions.DataCenterLocation,
 					Name = resourceGroupName,
 				};
 
@@ -91,16 +94,16 @@ namespace service_bus_dotnet_management
 				var creds = new TokenCredentials(token);
 				var sbClient = new ServiceBusManagementClient(creds)
 				{
-					SubscriptionId = SettingsCache["SubscriptionId"]
+					SubscriptionId = appOptions.SubscriptionId,
 				};
 
 				var namespaceParams = new NamespaceCreateOrUpdateParameters()
 				{
-					Location = SettingsCache["DataCenterLocation"],
+					Location = appOptions.DataCenterLocation,
 					Sku = new Microsoft.Azure.Management.ServiceBus.Models.Sku()
 					{
-						Tier = SettingsCache["ServiceBusSku"],
-						Name = SettingsCache["ServiceBusSku"]
+						Tier = appOptions.ServiceBusSku,
+						Name = appOptions.ServiceBusSku,
 					}
 				};
 
@@ -130,12 +133,12 @@ namespace service_bus_dotnet_management
 				var creds = new TokenCredentials(token);
 				var sbClient = new ServiceBusManagementClient(creds)
 				{
-					SubscriptionId = SettingsCache["SubscriptionId"]
+					SubscriptionId = appOptions.SubscriptionId,
 				};
 
 				var queueParams = new QueueCreateOrUpdateParameters()
 				{
-					Location = SettingsCache["DataCenterLocation"],
+					Location = appOptions.DataCenterLocation,
 					EnablePartitioning = true
 				};
 
@@ -165,12 +168,12 @@ namespace service_bus_dotnet_management
 				var creds = new TokenCredentials(token);
 				var sbClient = new ServiceBusManagementClient(creds)
 				{
-					SubscriptionId = SettingsCache["SubscriptionId"]
+					SubscriptionId = appOptions.SubscriptionId,
 				};
 
 				var topicParams = new TopicCreateOrUpdateParameters()
 				{
-					Location = SettingsCache["DataCenterLocation"],
+					Location = appOptions.DataCenterLocation,
 					EnablePartitioning = true
 				};
 
@@ -200,12 +203,12 @@ namespace service_bus_dotnet_management
 				var creds = new TokenCredentials(token);
 				var sbClient = new ServiceBusManagementClient(creds)
 				{
-					SubscriptionId = SettingsCache["SubscriptionId"]
+					SubscriptionId = appOptions.SubscriptionId,
 				};
 
 				var subscriptionParams = new SubscriptionCreateOrUpdateParameters()
 				{
-					Location = SettingsCache["DataCenterLocation"]
+					Location = appOptions.DataCenterLocation,
 				};
 
 				Console.WriteLine("Creating subscription...");
@@ -230,9 +233,9 @@ namespace service_bus_dotnet_management
 				{
 					Console.WriteLine("Renewing token...");
 
-					var tenantId = SettingsCache["TenantId"];
-					var clientId = SettingsCache["ClientId"];
-					var clientSecret = SettingsCache["ClientSecret"];
+					var tenantId = appOptions.TenantId;
+					var clientId = appOptions.ClientId;
+					var clientSecret = appOptions.ClientSecret;
 
 					var context = new AuthenticationContext($"https://login.windows.net/{tenantId}");
 
