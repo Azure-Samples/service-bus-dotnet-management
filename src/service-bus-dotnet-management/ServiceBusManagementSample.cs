@@ -235,7 +235,7 @@ namespace service_bus_dotnet_management
 					var clientId = SettingsCache["ClientId"];
 					var clientSecret = SettingsCache["ClientSecret"];
 
-					var context = new AuthenticationContext($"https://login.windows.net/{tenantId}");
+					var context = new AuthenticationContext($"https://login.microsoftonline.com/{tenantId}");
 
 					var result = await context.AcquireTokenAsync(
 						"https://management.core.windows.net/",
