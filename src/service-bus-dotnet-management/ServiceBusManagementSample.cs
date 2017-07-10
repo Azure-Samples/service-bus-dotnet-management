@@ -97,13 +97,13 @@ namespace service_bus_dotnet_management
 					SubscriptionId = appOptions.SubscriptionId,
 				};
 
-				var namespaceParams = new NamespaceCreateOrUpdateParameters()
+                var namespaceParams = new SBNamespace
 				{
 					Location = appOptions.DataCenterLocation,
-					Sku = new Microsoft.Azure.Management.ServiceBus.Models.Sku()
+					Sku = new SBSku()
 					{
-						Tier = appOptions.ServiceBusSku,
-						Name = appOptions.ServiceBusSku,
+						Tier = appOptions.ServiceBusSkuTier,
+						Name = appOptions.ServiceBusSkuName,
 					}
 				};
 
@@ -136,9 +136,8 @@ namespace service_bus_dotnet_management
 					SubscriptionId = appOptions.SubscriptionId,
 				};
 
-				var queueParams = new QueueCreateOrUpdateParameters()
+				var queueParams = new SBQueue
 				{
-					Location = appOptions.DataCenterLocation,
 					EnablePartitioning = true
 				};
 
@@ -171,9 +170,8 @@ namespace service_bus_dotnet_management
 					SubscriptionId = appOptions.SubscriptionId,
 				};
 
-				var topicParams = new TopicCreateOrUpdateParameters()
+				var topicParams = new SBTopic
 				{
-					Location = appOptions.DataCenterLocation,
 					EnablePartitioning = true
 				};
 
@@ -206,9 +204,9 @@ namespace service_bus_dotnet_management
 					SubscriptionId = appOptions.SubscriptionId,
 				};
 
-				var subscriptionParams = new SubscriptionCreateOrUpdateParameters()
+				var subscriptionParams = new SBSubscription
 				{
-					Location = appOptions.DataCenterLocation,
+                    MaxDeliveryCount = 10
 				};
 
 				Console.WriteLine("Creating subscription...");
