@@ -18,6 +18,7 @@ namespace service_bus_dotnet_management
 		private const string QueueName = "queue1";
 		private const string TopicName = "topic1";
 		private const string SubscriptionName = "topic1";
+		private const string RuleName = "rule1";
 
 		private static readonly IConfigurationRoot settingsCache;
 	    private static AppOptions appOptions;
@@ -44,8 +45,10 @@ namespace service_bus_dotnet_management
 			await CreateQueue().ConfigureAwait(false);
 			await CreateTopic().ConfigureAwait(false);
 			await CreateSubscription().ConfigureAwait(false);
+		    await CreateRule().ConfigureAwait(false);
 
-			Console.WriteLine("Press a key to exit.");
+
+            Console.WriteLine("Press a key to exit.");
 			Console.ReadLine();
 		}
 
@@ -221,7 +224,41 @@ namespace service_bus_dotnet_management
 			}
 		}
 
-		private static async Task<string> GetToken()
+	    private static async Task CreateRule()
+	    {
+	        try
+	        {
+	            if (string.IsNullOrEmpty(namespaceName))
+	            {
+	                throw new Exception("Namespace name is empty!");
+	            }
+
+	            var token = await GetToken();
+
+	            var creds = new TokenCredentials(token);
+	            var sbClient = new ServiceBusManagementClient(creds)
+	            {
+	                SubscriptionId = appOptions.SubscriptionId,
+	            };
+
+	            var ruleParams = new Rule
+	            {
+	                SqlFilter = new SqlFilter("myproperty='test'")
+                };
+
+	            Console.WriteLine("Creating rule...");
+	            await sbClient.Rules.CreateOrUpdateAsync(resourceGroupName, namespaceName, TopicName, SubscriptionName, RuleName, ruleParams);
+	            Console.WriteLine("Created rule successfully.");
+	        }
+	        catch (Exception e)
+	        {
+	            Console.WriteLine("Could not create a rule...");
+	            Console.WriteLine(e.Message);
+	            throw e;
+	        }
+	    }
+
+        private static async Task<string> GetToken()
 		{
 			try
 			{
