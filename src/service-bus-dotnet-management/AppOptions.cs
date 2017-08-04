@@ -1,7 +1,10 @@
-﻿using Microsoft.Azure.Management.ServiceBus.Models;
+﻿// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace service_bus_dotnet_management
+namespace AzureServiceBusDotNetManagement
 {
+    using Microsoft.Azure.Management.ServiceBus.Models;
+
     public class AppOptions
     {
         public string TenantId { get; set; }

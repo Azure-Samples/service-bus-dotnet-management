@@ -1,19 +1,19 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace service_bus_dotnet_management
+namespace AzureServiceBusDotNetManagement
 {
-	using System;
-	using System.Threading.Tasks;
-	using Microsoft.Azure.Management.ResourceManager;
-	using Microsoft.Azure.Management.ResourceManager.Models;
-	using Microsoft.Azure.Management.ServiceBus;
-	using Microsoft.Azure.Management.ServiceBus.Models;
-	using Microsoft.Extensions.Configuration;
-	using Microsoft.IdentityModel.Clients.ActiveDirectory;
-	using Microsoft.Rest;
+    using System;
+    using System.Threading.Tasks;
+    using Microsoft.Azure.Management.ResourceManager;
+    using Microsoft.Azure.Management.ResourceManager.Models;
+    using Microsoft.Azure.Management.ServiceBus;
+    using Microsoft.Azure.Management.ServiceBus.Models;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.IdentityModel.Clients.ActiveDirectory;
+    using Microsoft.Rest;
 
-	public static class ServiceBusManagementSample
+    public static class ServiceBusManagementSample
 	{
 		private const string QueueName = "queue1";
 		private const string TopicName = "topic1";
