@@ -1,38 +1,41 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace service_bus_dotnet_management
+namespace AzureServiceBusDotNetManagement
 {
-	using System;
-	using System.Threading.Tasks;
-	using Microsoft.Azure.Management.ResourceManager;
-	using Microsoft.Azure.Management.ResourceManager.Models;
-	using Microsoft.Azure.Management.ServiceBus;
-	using Microsoft.Azure.Management.ServiceBus.Models;
-	using Microsoft.Extensions.Configuration;
-	using Microsoft.IdentityModel.Clients.ActiveDirectory;
-	using Microsoft.Rest;
+    using System;
+    using System.Threading.Tasks;
+    using Microsoft.Azure.Management.ResourceManager;
+    using Microsoft.Azure.Management.ResourceManager.Models;
+    using Microsoft.Azure.Management.ServiceBus;
+    using Microsoft.Azure.Management.ServiceBus.Models;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.IdentityModel.Clients.ActiveDirectory;
+    using Microsoft.Rest;
 
-	public static class ServiceBusManagementSample
+    public static class ServiceBusManagementSample
 	{
 		private const string QueueName = "queue1";
 		private const string TopicName = "topic1";
 		private const string SubscriptionName = "topic1";
+		private const string RuleName = "rule1";
 
-		private static readonly IConfigurationRoot SettingsCache;
-		private static string tokenValue = string.Empty;
-		private static DateTime tokenExpiresAtUtc = DateTime.MinValue;
+		private static readonly IConfigurationRoot settingsCache;
+	    private static AppOptions appOptions;
+	    private static string tokenValue = string.Empty;
+	    private static DateTime tokenExpiresAtUtc = DateTime.MinValue;
 
-		private static string resourceGroupName = string.Empty;
-		private static string namespaceName = string.Empty;
+	    private static string resourceGroupName = string.Empty;
+	    private static string namespaceName = string.Empty;
 
-		static ServiceBusManagementSample()
+	    static ServiceBusManagementSample()
 		{
 			var builder = new ConfigurationBuilder();
 			builder.AddJsonFile("appsettings.json", true, true);
-			builder.AddUserSecrets();
 
-			SettingsCache = builder.Build();
+			settingsCache = builder.Build();
+		    appOptions = new AppOptions();
+            settingsCache.Bind(appOptions);
 		}
 
 		public static async Task Run()
@@ -42,8 +45,10 @@ namespace service_bus_dotnet_management
 			await CreateQueue().ConfigureAwait(false);
 			await CreateTopic().ConfigureAwait(false);
 			await CreateSubscription().ConfigureAwait(false);
+		    await CreateRule().ConfigureAwait(false);
 
-			Console.WriteLine("Press a key to exit.");
+
+            Console.WriteLine("Press a key to exit.");
 			Console.ReadLine();
 		}
 
@@ -59,12 +64,12 @@ namespace service_bus_dotnet_management
 				var creds = new TokenCredentials(token);
 				var rmClient = new ResourceManagementClient(creds)
 				{
-					SubscriptionId = SettingsCache["SubscriptionId"]
+					SubscriptionId = appOptions.SubscriptionId
 				};
 
 				var resourceGroupParams = new ResourceGroup()
 				{
-					Location = SettingsCache["DataCenterLocation"],
+					Location = appOptions.DataCenterLocation,
 					Name = resourceGroupName,
 				};
 
@@ -92,16 +97,16 @@ namespace service_bus_dotnet_management
 				var creds = new TokenCredentials(token);
 				var sbClient = new ServiceBusManagementClient(creds)
 				{
-					SubscriptionId = SettingsCache["SubscriptionId"]
+					SubscriptionId = appOptions.SubscriptionId,
 				};
 
-				var namespaceParams = new NamespaceCreateOrUpdateParameters()
+                var namespaceParams = new SBNamespace
 				{
-					Location = SettingsCache["DataCenterLocation"],
-					Sku = new Microsoft.Azure.Management.ServiceBus.Models.Sku()
+					Location = appOptions.DataCenterLocation,
+					Sku = new SBSku()
 					{
-						Tier = SettingsCache["ServiceBusSku"],
-						Name = SettingsCache["ServiceBusSku"]
+						Tier = appOptions.ServiceBusSkuTier,
+						Name = appOptions.ServiceBusSkuName,
 					}
 				};
 
@@ -131,12 +136,11 @@ namespace service_bus_dotnet_management
 				var creds = new TokenCredentials(token);
 				var sbClient = new ServiceBusManagementClient(creds)
 				{
-					SubscriptionId = SettingsCache["SubscriptionId"]
+					SubscriptionId = appOptions.SubscriptionId,
 				};
 
-				var queueParams = new QueueCreateOrUpdateParameters()
+				var queueParams = new SBQueue
 				{
-					Location = SettingsCache["DataCenterLocation"],
 					EnablePartitioning = true
 				};
 
@@ -166,12 +170,11 @@ namespace service_bus_dotnet_management
 				var creds = new TokenCredentials(token);
 				var sbClient = new ServiceBusManagementClient(creds)
 				{
-					SubscriptionId = SettingsCache["SubscriptionId"]
+					SubscriptionId = appOptions.SubscriptionId,
 				};
 
-				var topicParams = new TopicCreateOrUpdateParameters()
+				var topicParams = new SBTopic
 				{
-					Location = SettingsCache["DataCenterLocation"],
 					EnablePartitioning = true
 				};
 
@@ -201,12 +204,12 @@ namespace service_bus_dotnet_management
 				var creds = new TokenCredentials(token);
 				var sbClient = new ServiceBusManagementClient(creds)
 				{
-					SubscriptionId = SettingsCache["SubscriptionId"]
+					SubscriptionId = appOptions.SubscriptionId,
 				};
 
-				var subscriptionParams = new SubscriptionCreateOrUpdateParameters()
+				var subscriptionParams = new SBSubscription
 				{
-					Location = SettingsCache["DataCenterLocation"]
+                    MaxDeliveryCount = 10
 				};
 
 				Console.WriteLine("Creating subscription...");
@@ -221,7 +224,41 @@ namespace service_bus_dotnet_management
 			}
 		}
 
-		private static async Task<string> GetToken()
+	    private static async Task CreateRule()
+	    {
+	        try
+	        {
+	            if (string.IsNullOrEmpty(namespaceName))
+	            {
+	                throw new Exception("Namespace name is empty!");
+	            }
+
+	            var token = await GetToken();
+
+	            var creds = new TokenCredentials(token);
+	            var sbClient = new ServiceBusManagementClient(creds)
+	            {
+	                SubscriptionId = appOptions.SubscriptionId,
+	            };
+
+	            var ruleParams = new Rule
+	            {
+	                SqlFilter = new SqlFilter("myproperty='test'")
+                };
+
+	            Console.WriteLine("Creating rule...");
+	            await sbClient.Rules.CreateOrUpdateAsync(resourceGroupName, namespaceName, TopicName, SubscriptionName, RuleName, ruleParams);
+	            Console.WriteLine("Created rule successfully.");
+	        }
+	        catch (Exception e)
+	        {
+	            Console.WriteLine("Could not create a rule...");
+	            Console.WriteLine(e.Message);
+	            throw e;
+	        }
+	    }
+
+        private static async Task<string> GetToken()
 		{
 			try
 			{
@@ -231,9 +268,9 @@ namespace service_bus_dotnet_management
 				{
 					Console.WriteLine("Renewing token...");
 
-					var tenantId = SettingsCache["TenantId"];
-					var clientId = SettingsCache["ClientId"];
-					var clientSecret = SettingsCache["ClientSecret"];
+					var tenantId = appOptions.TenantId;
+					var clientId = appOptions.ClientId;
+					var clientSecret = appOptions.ClientSecret;
 
 					var context = new AuthenticationContext($"https://login.windows.net/{tenantId}");
 
