@@ -272,7 +272,7 @@ namespace AzureServiceBusDotNetManagement
 					var clientId = appOptions.ClientId;
 					var clientSecret = appOptions.ClientSecret;
 
-					var context = new AuthenticationContext($"https://login.windows.net/{tenantId}");
+					var context = new AuthenticationContext($"https://login.microsoftonline.com/{tenantId}");
 
 					var result = await context.AcquireTokenAsync(
 						"https://management.core.windows.net/",
