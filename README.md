@@ -50,7 +50,7 @@ The pattern to manipulate any Service Bus resource is similar and follows a comm
     var context = new AuthenticationContext($"https://login.microsoftonline.com/{tenantId}");
 
     var result = await context.AcquireTokenAsync(
-        "https://management.core.windows.net/",
+        "https://management.azure.com/",
         new ClientCredential(clientId, clientSecret)
     );
     ```
